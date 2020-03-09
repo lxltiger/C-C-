@@ -42,7 +42,10 @@ void read_data(int sockfd)
 		usleep(1000);
 	}
 }
-
+/*
+从Linux内核角度看，套接字就是通讯的一个端点，
+从Linux程序角度看，套接字就是一个有相应描述符的打开的文件
+*/
 int main(int argc, char const *argv[])
 {
 	/* code */
@@ -51,18 +54,18 @@ int main(int argc, char const *argv[])
 	
 	/*
 	*1.create socket
-	*AF_INET IP4地址类型
+	*AF_INET IP4地址类型 AF-address family
 	*SOCK_STREAM 字节流
 	*/
 	int listenfd=socket(AF_INET,SOCK_STREAM,0);
 
 	bzero(&server_addr,sizeof(server_addr));
-	//初始化服务端sock结构体信息
+	//初始化服务端sock结构体信息 sin也许指 socke internet
 	server_addr.sin_family=AF_INET;
 	server_addr.sin_addr.s_addr=htonl(INADDR_ANY);
 	server_addr.sin_port=htons(12345);
 
-	// 2.绑定到一个端口
+	// 2 将描述符listenfd和sock addr关联起来
 
 	bind(listenfd,(struct sockaddr *)&server_addr,sizeof(server_addr));
 	// 监听客户端的访问,backlog为1024

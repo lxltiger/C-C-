@@ -6,6 +6,16 @@ void unix_error(char *msg){
 	exit(0);
 }
 
+void app_error(char *msg){
+	fprintf(stderr, "%s\n", msg);
+	exit(0);
+}
+
+void gai_error(int code, char *msg) /* Getaddrinfo-style error */
+{
+    fprintf(stderr, "%s: %s\n", msg, gai_strerror(code));
+    exit(0);
+}
 
 
 /********************************
@@ -32,6 +42,107 @@ ssize_t Write(int fd,const void *buff,size_t size){
 	return rc;
 }
 
+void Close(int fd) 
+{
+    int rc;
+
+    if ((rc = close(fd)) < 0)
+	unix_error("Close error");
+}
+
+
+void Stat(const char *filename, struct stat *buf){
+	if(stat(filename,buf)<0)
+		unix_error("stat error");
+}
+
+void Fstat(int fd, struct stat *buf) {
+	if(fstat(fd,buf)<0)
+		unix_error("fstat error");
+}
+
+
+
+/* Sockets interface wrappers */
+int Accept(int s, struct sockaddr *addr, socklen_t *addrlen){
+	int rc;
+    if ((rc = accept(s, addr, addrlen)) < 0)
+	unix_error("Accept error");
+    return rc;
+}
+
+/*与getaddressinfo相反，这个函数将套接字地址结构转换成对应的主机和服务名字符串
+	sa指向大小为salen字节的套接字地址结构
+	host指向大小为hostlen字节的缓存区
+	serv指向大小为servlen字节的缓冲区
+	host或serv如果不想要可以设为NULL，len设为0，但两者只能二选一
+	flags可以修改默认行为
+		NI_NUMERICHOST 默认返回host中域名，设置此标志返回数字地址字符串
+		NI_NUMERICSERV 默认检查/etc/services，如果可能返回服务号而不是端口，设置此标志位跳过检查直接返回端口号
+*/
+void Getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, 
+                 size_t hostlen, char *serv, size_t servlen, int flags){
+	int rc;
+
+    if ((rc = getnameinfo(sa, salen, host, hostlen, serv, 
+                          servlen, flags)) != 0) 
+        gai_error(rc, "Getnameinfo error");
+
+}
+
+/* Directory wrappers */
+// 以路径为参数，返回指向目录流的指针
+DIR *Opendir(const char *name){
+	DIR *dirp=opendir(name);
+	if(!dirp)
+		unix_error("open dir error");
+	return dirp;
+
+}
+// 返回流dirp中下一个目录项指针，没有返回空
+struct dirent *Readdir(DIR *dirp){
+	struct dirent *dep;
+	errno=0;
+	dep=readdir(dirp);
+	if((dep==NULL)&&errno!=0)
+		unix_error("read dir error");
+
+	return dep;
+}
+
+
+int Closedir(DIR *dirp){
+	int rc;
+	if((rc=closedir(dirp))<0)
+		unix_error("close dir error");
+
+	return rc;
+}
+
+
+/* Standard I/O wrappers */
+void Fclose(FILE *fp);
+FILE *Fdopen(int fd, const char *type);
+
+
+char *Fgets(char *ptr, int n, FILE *stream){
+	char *rptr;
+	if((rptr=fgets(ptr,n,stream))==NULL&&ferror(stream))
+		app_error("Fget errno");
+
+	return rptr;
+}
+
+
+FILE *Fopen(const char *filename, const char *mode);
+
+void Fputs(const char *ptr, FILE *stream){
+	if(fputs(ptr,stream)==EOF)
+		unix_error("Fputs error");
+}
+
+size_t Fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+void Fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 
 
 // 可能返回不足值，比如n=50 但文件只有20个字节
@@ -147,7 +258,7 @@ ssize_t rio_readlineb(rio_t *rp,void *usrbuff,size_t maxlen){
 				break;
 			}
 		}else if(rc==0){
-			if(n=1)
+			if(n==1)
 				return 0;/*EOF nothing read*/
 			else
 				break; /*EOF with some read*/
@@ -186,5 +297,121 @@ ssize_t Rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen){
 	ssize_t rc;
 	if((rc=rio_readlineb(rp,usrbuf,maxlen))<0)
 		unix_error("rio readnb");
+	return rc;
+}
+
+/*
+ * open_clientfd - Open connection to server at <hostname, port> and
+ *     return a socket descriptor ready for reading and writing. This
+ *     function is reentrant(表示线程安全) and protocol-independent.
+ *
+ *     On error, returns: 
+ *       -2 for getaddrinfo error
+ *       -1 with errno set for other errors.
+ */
+int open_clientfd(char *hostname,char *port){
+	int clientfd,rc;
+	struct addrinfo hints,*listp,*p;
+	//为什么要置零，难道有默认值
+	memset(&hints,0,sizeof(struct addrinfo));
+	hints.ai_socktype=SOCK_STREAM;/*tcp连接*/
+	hints.ai_flags=AI_NUMERICSERV;/*数字端口*/
+	hints.ai_flags |= AI_ADDRCONFIG;/*当主机被配成IPV4时，返回IPV4地址，对IPV6也是一样*/
+	
+	/*
+	*getaddrinfo将主机名、主机地址、服务名和端口号的字符串表示转换成套接字地址结构
+	*第一个参数可以是域名也可以是点十分制的IP地址
+	*第二个参数可以是服务名，如http，也可以是十进制端口号；这里被hints.ai_flags=AI_NUMERICSERV强制为端口号
+	*/
+	if((rc=getaddrinfo(hostname,port,&hints,&listp))!=0){
+		 fprintf(stderr, "getaddrinfo failed (%s:%s): %s\n", hostname, port, gai_strerror(rc));
+        return -2;
+	}
+
+	for(p=listp;p;p=p->ai_next){
+		//create socket descriptor
+		if((clientfd=socket(p->ai_family,p->ai_socktype,p->ai_protocol))<0){
+			continue;
+		}
+		//连接服务端 如果成功跳出循环
+		if(connect(clientfd,p->ai_addr,p->ai_addrlen)!=-1)
+			break;
+		
+		if(close(clientfd)<0){
+			fprintf(stderr, "open_clientfd: close failed: %s\n", strerror(errno));
+            return -1;
+		}
+	}
+
+	freeaddrinfo(listp);
+	if(!p)
+		return -1;/*all connects fail*/
+	else
+		return clientfd;
+
+
+}
+
+/*  
+ * open_listenfd - Open and return a listening socket on port. This
+ *     function is reentrant and protocol-independent.
+ *
+ *     On error, returns: 
+ *       -2 for getaddrinfo error
+ *       -1 with errno set for other errors.
+ */
+int open_listenfd(char *port){
+	int listenfd,rc,optval=1;
+	struct addrinfo hints,*listp,*p;
+	memset(&hints,0,sizeof(struct addrinfo));
+	hints.ai_socktype=SOCK_STREAM;/*tcp连接*/
+	hints.ai_flags = AI_PASSIVE |AI_ADDRCONFIG;/*AI_PASSIVE表示any IP address*/
+	hints.ai_flags|=AI_NUMERICSERV;/*数字端口*/
+	if((rc=getaddrinfo(NULL,port,&hints,&listp))!=0){
+		 fprintf(stderr, "getaddrinfo failed (port%s): %s\n", port, gai_strerror(rc));
+        return -2;
+	}
+
+	for(p=listp;p;p=p->ai_next){
+		if((listenfd=socket(p->ai_family,p->ai_socktype,p->ai_protocol))<0)
+			continue;
+		 /* Eliminates "Address already in use" error from bind 方便立即开始接受新连接*/
+        setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR,  (const void *)&optval , sizeof(int));
+
+        if(bind(listenfd,p->ai_addr,p->ai_addrlen)==0)
+        	break;
+        //bind fail
+        if(close(listenfd)<0)
+        	fprintf(stderr, "open_listenfd close failed: %s\n", strerror(errno));
+            return -1;
+	}
+
+	freeaddrinfo(listp);
+	//没找到
+	if(!p)
+		return -1;
+	//监听失败
+	if(listen(listenfd,LISTENQ)<0){
+		close(listenfd);
+		return -1;
+	}
+
+	return listenfd;
+
+}
+
+int Open_clientfd(char *hostname,char *port){
+
+	int rc;
+	if((rc=open_clientfd(hostname,port))<0)
+		unix_error("open clientfd fail");
+
+	return rc;
+}
+int Open_listenfd(char *port){
+	int rc;
+	if((rc=open_listenfd(port))<0)
+		unix_error(" Open_listenfd fail");
+
 	return rc;
 }

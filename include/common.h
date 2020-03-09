@@ -28,6 +28,10 @@
 #define DEF_MODE   S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH
 #define DEF_UMASK  S_IWGRP|S_IWOTH
 
+/* Simplifies calls to bind(), connect(), and accept() */
+/* $begin sockaddrdef */
+typedef struct sockaddr SA;
+
 
 /*rio package 持久化状态*/
 #define RIO_BUFSIZE 8192
@@ -42,6 +46,13 @@ typedef struct {
 #define	MAXLINE	 8192  /* Max text line length */
 #define MAXBUF   8192  /* Max I/O buffer size */
 #define LISTENQ  1024  /* Second argument to listen() */
+
+/* Our own error-handling functions */
+void unix_error(char *msg);
+void posix_error(int code, char *msg);
+void dns_error(char *msg);
+void gai_error(int code, char *msg);
+void app_error(char *msg);
 
 
 
@@ -59,7 +70,32 @@ int Open(const char *pathname,int flags,mode_t mode);
 ssize_t Read(int fd,void *buff,size_t size);
 //从buff中向fd写入size个字节，返回值也可能小于期望值size
 ssize_t Write(int fd,const void *buff,size_t size);
+void Close(int fd);
+void Stat(const char *filename, struct stat *buf);
+void Fstat(int fd, struct stat *buf) ;
 // UNIX IO Wrapper--------//
+
+/* Sockets interface wrappers */
+int Accept(int s, struct sockaddr *addr, socklen_t *addrlen);
+
+/* Protocol independent wrappers */
+void Getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host, 
+                 size_t hostlen, char *serv, size_t servlen, int flags);
+
+/* Directory wrappers */
+DIR *Opendir(const char *name);
+struct dirent *Readdir(DIR *dirp);
+int Closedir(DIR *dirp);
+
+/* Standard I/O wrappers */
+void Fclose(FILE *fp);
+FILE *Fdopen(int fd, const char *type);
+char *Fgets(char *ptr, int n, FILE *stream);
+FILE *Fopen(const char *filename, const char *mode);
+void Fputs(const char *ptr, FILE *stream);
+size_t Fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+void Fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+
 
 /*RIO package rio_readn和rio_writen没有缓冲，直接在文件和内存间传输数据*/
 // rio_readn在遇到EOF时只能返回不足值
@@ -78,4 +114,9 @@ ssize_t Rio_readnb(rio_t *rp, void *usrbuf, size_t n);
 ssize_t Rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen);
 
 
+int open_clientfd(char *hostname,char *port);
+int open_listenfd(char *port);
+
+int Open_clientfd(char *hostname,char *port);
+int Open_listenfd(char *port);
 #endif
