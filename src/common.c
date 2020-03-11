@@ -17,6 +17,23 @@ void gai_error(int code, char *msg) /* Getaddrinfo-style error */
     exit(0);
 }
 
+pid_t Fork(void){
+	pid_t pid;
+	if((pid=fork())<0)
+		unix_error("fork error");
+	return pid;
+}
+
+handler_t *Signal(int signum,handler_t *handler){
+	struct sigaction action,old_action;
+	action.sa_handler=handler;
+	sigemptyset(&action.sa_mask);/*block sigs of type being handled*/
+	action.sa_flags=SA_RESTART;/*restart syscall if posssible*/
+	if(sigaction(signum,&action,&old_action)<0)
+		unix_error("signal error");
+	return (old_action.sa_handler);
+}
+
 
 /********************************
  * Wrappers for Unix I/O routines
@@ -50,6 +67,14 @@ void Close(int fd)
 	unix_error("Close error");
 }
 
+int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, 
+	   struct timeval *timeout){
+	 int rc;
+
+    if ((rc = select(n, readfds, writefds, exceptfds, timeout)) < 0)
+	unix_error("Select error");
+    return rc;
+}
 
 void Stat(const char *filename, struct stat *buf){
 	if(stat(filename,buf)<0)

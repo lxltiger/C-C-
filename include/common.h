@@ -54,8 +54,28 @@ void dns_error(char *msg);
 void gai_error(int code, char *msg);
 void app_error(char *msg);
 
+/* Process control wrappers */
+pid_t Fork(void);
+void Execve(const char *filename, char *const argv[], char *const envp[]);
+pid_t Wait(int *status);
+pid_t Waitpid(pid_t pid, int *iptr, int options);
+void Kill(pid_t pid, int signum);
+unsigned int Sleep(unsigned int secs);
+void Pause(void);
+unsigned int Alarm(unsigned int seconds);
+void Setpgid(pid_t pid, pid_t pgid);
+pid_t Getpgrp();
 
-
+/* Signal wrappers */
+typedef void handler_t(int);
+handler_t *Signal(int signum, handler_t *handler);
+void Sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+void Sigemptyset(sigset_t *set);
+void Sigfillset(sigset_t *set);
+void Sigaddset(sigset_t *set, int signum);
+void Sigdelset(sigset_t *set, int signum);
+int Sigismember(const sigset_t *set, int signum);
+int Sigsuspend(const sigset_t *set);
 
 // UNIX IO Wrapper--------//
 int Open(const char *pathname,int flags,mode_t mode);
@@ -71,6 +91,8 @@ ssize_t Read(int fd,void *buff,size_t size);
 //从buff中向fd写入size个字节，返回值也可能小于期望值size
 ssize_t Write(int fd,const void *buff,size_t size);
 void Close(int fd);
+int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, 
+	   struct timeval *timeout);
 void Stat(const char *filename, struct stat *buf);
 void Fstat(int fd, struct stat *buf) ;
 // UNIX IO Wrapper--------//
