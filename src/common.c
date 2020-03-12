@@ -11,6 +11,10 @@ void app_error(char *msg){
 	exit(0);
 }
 
+void posix_error(int code, char *msg){
+	fprintf(stderr, "%s: %s\n", msg, strerror(code));
+    exit(0);
+}
 void gai_error(int code, char *msg) /* Getaddrinfo-style error */
 {
     fprintf(stderr, "%s: %s\n", msg, gai_strerror(code));
@@ -115,6 +119,56 @@ void Getnameinfo(const struct sockaddr *sa, socklen_t salen, char *host,
 
 }
 
+/* Pthreads thread control wrappers */
+void Pthread_create(pthread_t *tidp, pthread_attr_t *attrp, 
+		    void * (*routine)(void *), void *argp){
+
+	int rc;
+	if((rc=pthread_create(tidp,attrp,routine,argp))!=0)
+		posix_error(rc,"Pthreads create error");
+}
+
+
+void Pthread_join(pthread_t tid, void **thread_return);
+void Pthread_cancel(pthread_t tid);
+
+void Pthread_detach(pthread_t tid){
+	int rc;
+	if((rc=pthread_detach(tid))!=0)
+		posix_error(rc,"Pthread_detach error");
+}
+
+void Pthread_exit(void *retval){
+	 pthread_exit(retval);
+}
+
+pthread_t Pthread_self(void){
+	return pthread_self();
+}
+/*可动态初始化多个线程的共享的全局变量*/
+void Pthread_once(pthread_once_t *once_control, void (*init_function)()){
+	pthread_once(once_control,init_function);
+}
+
+
+/* POSIX semaphore wrappers */
+void Sem_init(sem_t *sem, int pshared, unsigned int value){
+	if(sem_init(sem,pshared,value)<0)
+		unix_error("Sem_init eror");
+}
+/*获取锁，如果失败就阻塞*/
+void P(sem_t *sem){
+	if(sem_wait(sem)<0)
+		unix_error("P eror");
+}
+
+/*释放锁，唤醒阻塞的线程，如果有多个 只能唤醒一个*/
+void V(sem_t *sem){
+	if(sem_post(set)<0)
+		unix_error("V error");
+}
+
+
 /* Directory wrappers */
 // 以路径为参数，返回指向目录流的指针
 DIR *Opendir(const char *name){
@@ -169,6 +223,28 @@ void Fputs(const char *ptr, FILE *stream){
 size_t Fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
 void Fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 
+/* Dynamic storage allocation wrappers */
+void *Malloc(size_t size){
+	void *p;
+	//分配size字节大小的内存  这些字节未经初始化 可能有垃圾值
+	if((p=malloc(size))==NULL)
+		unix_error("Malloc error");
+	return p;
+
+}
+void *Realloc(void *ptr, size_t size);
+
+void *Calloc(size_t nmemb, size_t size){
+	void* p;
+	//分配nmemb个大小为size字节的内存，这块内存都初始化为0 因此分配速度比malloc慢
+	if((p==calloc(nmemb,size))==NULL)
+		unix_error("Calloc error");
+	return p;
+}
+
+void Free(void *ptr){
+	free(ptr);
+}
 
 // 可能返回不足值，比如n=50 但文件只有20个字节
 ssize_t rio_readn(int fd,void *usrbuff,size_t n){

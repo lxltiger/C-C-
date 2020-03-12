@@ -13,13 +13,13 @@ PROGS =	hello\
 	echoclient\
 	echoservers\
 	echoserverp\
-# 	echoservert\
+	echoservert\
+	sharing\
 # 	echoservert_cnt\
 # 	echoservert_pre\
 # 	ctime_ts\
 # 	race\
 # 	norace\
-# 	sharing\
 # 	rand\
 # 	rand_r\
 # 	threadunsafe\
@@ -71,7 +71,7 @@ $(CSAPP_SRC)/common.o: $(CSAPP_SRC)/common.c $(CSAPP_INC)/common.h
 # Programs that need more than one .o file
 # echoserveri: echoserveri.o echo.o
 echoserverp: echoserverp.o echo.o
-# echoservert: echoservert.o echo.o
+echoservert: echoservert.o echo.o
 # echoservert_cnt: echoservert_cnt.o echo_cnt.o
 # echoservert_pre: echoservert_pre.o echo_cnt.o sbuf.o
 echoservers: echoservers.o echo.o

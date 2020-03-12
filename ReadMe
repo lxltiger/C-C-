@@ -1,0 +1,4 @@
+// gcc -o thread  thread_demo.c -pthread 使用pthread库，需要加-pthread参数
+//gcc null.c -o null -g   
+// gdb null  使用gdb调式 demo for nano
+//valgrind --leak-check=full ./null
