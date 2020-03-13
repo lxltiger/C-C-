@@ -16,8 +16,8 @@ PROGS =	hello\
 	echoservert\
 	sharing\
 	echoservert_pre\
+	ctime_ts\
 # 	echoservert_cnt\
-# 	ctime_ts\
 # 	race\
 # 	norace\
 # 	rand\

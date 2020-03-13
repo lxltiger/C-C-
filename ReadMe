@@ -8,3 +8,5 @@
 *P(s):如果s是非0值，s减1返回；如果s为0线程就挂起直到s为非0
 *V(s):将s加1，如果有任何线程阻塞等待s变为非0，重启这些线程中的一个
 */
+
+VS Code设置大写快捷键  File->Preference->Keyboards shortcut->Upper case
