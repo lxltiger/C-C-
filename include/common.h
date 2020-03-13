@@ -159,8 +159,8 @@ ssize_t Rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen);
 
 
 int open_clientfd(char *hostname,char *port);
-int open_listenfd(char *port);
+int open_listenfd(const char *port);
 
 int Open_clientfd(char *hostname,char *port);
-int Open_listenfd(char *port);
+int Open_listenfd(const char *port);
 #endif

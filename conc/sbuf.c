@@ -7,9 +7,9 @@ void sbuf_init(sbuf_t *sp,int n){
 	sp->buf=Calloc(n,sizeof(int));
 	sp->n=n;
 	sp->front=sp->rear=0;
-	Sem_init(sp->mutex,0,1);
-	Sem_init(sp->slots,0,n);
-	Sem_init(sp->items,0,0);
+	Sem_init(&sp->mutex,0,1);
+	Sem_init(&sp->slots,0,n);
+	Sem_init(&sp->items,0,0);
 }
 
 
@@ -31,8 +31,9 @@ int sbuf_remove(sbuf_t *sp){
 	int item;
 	P(&sp->items);/*wait items*/
 	P(&sp->mutex);/*lock buf*/
-	item=sp->buf[(sp->front+1)%(sp->n)];
+	item=sp->buf[(++sp->front)%(sp->n)];
 	V(&sp->mutex);/*unlock buf*/
 	V(&sp->slots);/*通知有可用的slot*/
+
 	return item;
 }

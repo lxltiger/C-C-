@@ -164,7 +164,7 @@ void P(sem_t *sem){
 
 /*释放锁，唤醒阻塞的线程，如果有多个 只能唤醒一个*/
 void V(sem_t *sem){
-	if(sem_post(set)<0)
+	if(sem_post(sem)<0)
 		unix_error("V error");
 }
 
@@ -237,7 +237,7 @@ void *Realloc(void *ptr, size_t size);
 void *Calloc(size_t nmemb, size_t size){
 	void* p;
 	//分配nmemb个大小为size字节的内存，这块内存都初始化为0 因此分配速度比malloc慢
-	if((p==calloc(nmemb,size))==NULL)
+	if((p=calloc(nmemb,size))==NULL)
 		unix_error("Calloc error");
 	return p;
 }
@@ -461,7 +461,7 @@ int open_clientfd(char *hostname,char *port){
  *       -2 for getaddrinfo error
  *       -1 with errno set for other errors.
  */
-int open_listenfd(char *port){
+int open_listenfd(const char *port){
 	int listenfd,rc,optval=1;
 	struct addrinfo hints,*listp,*p;
 	memset(&hints,0,sizeof(struct addrinfo));
@@ -509,7 +509,7 @@ int Open_clientfd(char *hostname,char *port){
 
 	return rc;
 }
-int Open_listenfd(char *port){
+int Open_listenfd(const char *port){
 	int rc;
 	if((rc=open_listenfd(port))<0)
 		unix_error(" Open_listenfd fail");

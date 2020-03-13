@@ -2,3 +2,9 @@
 //gcc null.c -o null -g   
 // gdb null  使用gdb调式 demo for nano
 //valgrind --leak-check=full ./null
+
+
+/*信号量s是一个全局非负整数，
+*P(s):如果s是非0值，s减1返回；如果s为0线程就挂起直到s为非0
+*V(s):将s加1，如果有任何线程阻塞等待s变为非0，重启这些线程中的一个
+*/

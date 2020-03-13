@@ -15,8 +15,8 @@ PROGS =	hello\
 	echoserverp\
 	echoservert\
 	sharing\
+	echoservert_pre\
 # 	echoservert_cnt\
-# 	echoservert_pre\
 # 	ctime_ts\
 # 	race\
 # 	norace\
@@ -73,7 +73,7 @@ $(CSAPP_SRC)/common.o: $(CSAPP_SRC)/common.c $(CSAPP_INC)/common.h
 echoserverp: echoserverp.o echo.o
 echoservert: echoservert.o echo.o
 # echoservert_cnt: echoservert_cnt.o echo_cnt.o
-# echoservert_pre: echoservert_pre.o echo_cnt.o sbuf.o
+echoservert_pre: echoservert_pre.o echo_count.o sbuf.o
 echoservers: echoservers.o echo.o
 # select: select.o echo.o
 
