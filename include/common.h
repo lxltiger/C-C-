@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <sys/epoll.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -95,6 +96,9 @@ int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
 	   struct timeval *timeout);
 void Stat(const char *filename, struct stat *buf);
 void Fstat(int fd, struct stat *buf) ;
+
+
+int Epoll();
 // UNIX IO Wrapper--------//
 
 /* Sockets interface wrappers */

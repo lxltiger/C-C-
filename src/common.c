@@ -90,6 +90,13 @@ void Fstat(int fd, struct stat *buf) {
 		unix_error("fstat error");
 }
 
+int Epoll(){
+	int epoll_fd;
+	if((epoll_fd=epoll_create1(0))==-1)
+		unix_error("epoll_create1 error");	
+
+	return epoll_fd;
+}
 
 
 /* Sockets interface wrappers */

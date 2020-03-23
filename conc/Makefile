@@ -14,6 +14,7 @@ PROGS =	hello\
 	echoservers\
 	echoserverp\
 	echoservert\
+	echoserverep\
 	sharing\
 	echoservert_pre\
 	ctime_ts\
@@ -71,6 +72,7 @@ $(CSAPP_SRC)/common.o: $(CSAPP_SRC)/common.c $(CSAPP_INC)/common.h
 # Programs that need more than one .o file
 # echoserveri: echoserveri.o echo.o
 echoserverp: echoserverp.o echo.o
+echoserverep: echoserverep.o echo.o
 echoservert: echoservert.o echo.o
 # echoservert_cnt: echoservert_cnt.o echo_cnt.o
 echoservert_pre: echoservert_pre.o echo_count.o sbuf.o
