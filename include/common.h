@@ -98,7 +98,8 @@ void Stat(const char *filename, struct stat *buf);
 void Fstat(int fd, struct stat *buf) ;
 
 
-int Epoll();
+int Epoll_create();
+int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *ev);
 // UNIX IO Wrapper--------//
 
 /* Sockets interface wrappers */

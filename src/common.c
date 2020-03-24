@@ -90,7 +90,7 @@ void Fstat(int fd, struct stat *buf) {
 		unix_error("fstat error");
 }
 
-int Epoll(){
+int Epoll_create(){
 	int epoll_fd;
 	if((epoll_fd=epoll_create1(0))==-1)
 		unix_error("epoll_create1 error");	
@@ -98,6 +98,11 @@ int Epoll(){
 	return epoll_fd;
 }
 
+int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *ev){
+	int rc;
+	if((rc==epoll_ctl(epfd,op,fd,ev))==-1)
+		unix_error("epoll_ctl error");
+}
 
 /* Sockets interface wrappers */
 int Accept(int s, struct sockaddr *addr, socklen_t *addrlen){

@@ -70,13 +70,14 @@ int main(int argc, char const *argv[])
 void do_read(int epollfd, int fd,char* buf){
 	int nread=read(fd,buf,MAXBUF);
 	if (nread == -1){
-         perror("read error:");
+        perror("read error:");
+		//automatically removed from all of interest lists after closed
         close(fd);
-         delete_event(epollfd,fd,EPOLLIN);
+        //  delete_event(epollfd,fd,EPOLLIN);
     }else if (nread == 0){
          fprintf(stderr,"client close.\n");
          close(fd);
-        delete_event(epollfd,fd,EPOLLIN);
+        // delete_event(epollfd,fd,EPOLLIN);
     }else{
         printf("read message is : %s",buf);
         //修改描述符对应的事件，由读改为写
@@ -90,7 +91,7 @@ void do_write(int epollfd, int fd,char* buf){
     if (nwrite == -1){
         perror("write error:");
         close(fd);
-        delete_event(epollfd,fd,EPOLLOUT);
+        // delete_event(epollfd,fd,EPOLLOUT);
     }else
         modify_event(epollfd,fd,EPOLLIN);
     memset(buf,0,MAXBUF);
