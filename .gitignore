@@ -1,0 +1,11 @@
+basic/*.o
+conc/*o
+cpp/*.o
+data_structure/*.o
+io/*.o
+lib/*.o
+netp/*.o
+src/*.o
+tcp/*.o
+temp/*.o
+udp/*.o

@@ -1,6 +1,7 @@
 #include "common.h"
 
 
+
 void unix_error(char *msg){
 	fprintf(stderr, "%s:%s\n", msg,strerror(errno));
 	exit(0);
@@ -20,6 +21,8 @@ void gai_error(int code, char *msg) /* Getaddrinfo-style error */
     fprintf(stderr, "%s: %s\n", msg, gai_strerror(code));
     exit(0);
 }
+
+
 
 pid_t Fork(void){
 	pid_t pid;
@@ -100,7 +103,7 @@ int Epoll_create(){
 
 int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *ev){
 	int rc;
-	if((rc==epoll_ctl(epfd,op,fd,ev))==-1)
+	if((rc=epoll_ctl(epfd,op,fd,ev))==-1)
 		unix_error("epoll_ctl error");
 }
 
