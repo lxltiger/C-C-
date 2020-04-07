@@ -46,4 +46,4 @@
 // "w+"	write extended	Create a file for read/write	destroy contents			create new
 // "a+"	append extended	Open a file for read/write		write to end				create new
 
-VS Code设置大写快捷键  File->Preference->Keyboards shortcut->Upper case
+VS Code设置大写快捷键  File->Preference->Keyboards shortcut->Upper case   window下是ctrl+K

@@ -45,10 +45,13 @@ handler_t *Signal(int signum,handler_t *handler){
 /********************************
  * Wrappers for Unix I/O routines
  ********************************/
+
+
 int Open(const char *pathname,int flags,mode_t mode){
 	int rc;
 	if((rc=open(pathname,flags,mode))<0)
-		unix_error("open error");
+		errExit("open file %s",pathname);
+		// unix_error("open error");
 	return rc;
 }
 
@@ -69,9 +72,9 @@ ssize_t Write(int fd,const void *buff,size_t size){
 void Close(int fd) 
 {
     int rc;
-
     if ((rc = close(fd)) < 0)
-	unix_error("Close error");
+		errExit("Close error");
+	// unix_error("Close error");
 }
 
 int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, 

@@ -35,16 +35,16 @@ void errMsg(const char *format, ...);
 #define NORETURN
 #endif
 
-void errExit(const char *format, ...) NORETURN ;
+void errExit(const char *format, ...)  ;
 
-void err_exit(const char *format, ...) NORETURN ;
+void err_exit(const char *format, ...)  ;
 
-void errExitEN(int errnum, const char *format, ...) NORETURN ;
+void errExitEN(int errnum, const char *format, ...)  ;
 
-void fatal(const char *format, ...) NORETURN ;
+void fatal(const char *format, ...)  ;
 
-void usageErr(const char *format, ...) NORETURN ;
+void usageErr(const char *format, ...)  ;
 
-void cmdLineErr(const char *format, ...) NORETURN ;
+void cmdLineErr(const char *format, ...)  ;
 
 #endif
