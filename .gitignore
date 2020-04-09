@@ -1,5 +1,5 @@
 basic/*.o
-conc/*o
+conc/*.o
 cpp/*.o
 data_structure/*.o
 io/*.o
