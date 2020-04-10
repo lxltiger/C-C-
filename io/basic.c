@@ -140,8 +140,16 @@ void scatter_gather_io(int argc, char const *argv[]){
 int main(int argc, char const *argv[]) {
 
     
+    int openFlags = O_CREAT | O_RDWR |O_APPEND  ;
+    mode_t filePerms = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |
+                S_IROTH | S_IWOTH; 
+    int outputFd=Open(argv[1],openFlags,filePerms);
 
-
+    for (size_t i = 0; i < 10; i++){
+        write(outputFd,argv[2],strlen(argv[2]));
+        // sleep(1);
+    }
+    
     exit(EXIT_SUCCESS);
 }
 

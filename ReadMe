@@ -47,3 +47,14 @@
 // "a+"	append extended	Open a file for read/write		write to end				create new
 
 VS Code设置大写快捷键  File->Preference->Keyboards shortcut->Upper case   window下是ctrl+K
+
+C语言中__attribute__可以设置函数属性（Function Attribute）、变量属性（Variable Attribute）和类型属性（Type Attribute）
+
+内存映射的参数说明：
+  以文件为基础的映射
+	MAP_PRIVATE 私有映射，采用写时复制的方式保护，修改的内容对其他进程不可见并且不会写回文件;多用于加载代码、数据文件
+	MAP_SHARD 共享，对内存的修改，其它进程可见并且会写回文件。不能操作虚拟机下的共享文件，因为linux是无法保证文件的一致性的
+
+  匿名映射：
+  MAP_PRIVATE 创建进程私有字节都填充为0的内存，多用于malloc分配大内存
+  MAP_SHARD  创建进程共享的内存，多用于进程间通讯

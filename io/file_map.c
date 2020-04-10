@@ -26,7 +26,8 @@ void modify(int argc, char const *argv[]){
 	if(fstat(fd,&sb)==-1)
 		handle_error("fstat");
 	printf("size of file %zu\n", sb.st_size);
-	//MAP_PRIVATE 私有映射无法修改文件;MAP_SHARD不能操作虚拟机下的共享文件，因为linux是无法保证文件的一致性的
+	//MAP_PRIVATE 私有映射，采用写时复制的方式保护，修改的内容对其他进程不可见并且不会写回文件;
+	//MAP_SHARD不能操作虚拟机下的共享文件，因为linux是无法保证文件的一致性的
 	addr=mmap(NULL,sb.st_size,PROT_WRITE|PROT_READ,MAP_SHARED,fd,0);
 	
 	if(addr==MAP_FAILED)
