@@ -1,5 +1,6 @@
 #include "common.h"
 
+
 void cpfile(){
 	int n;
 	rio_t rio;
@@ -103,25 +104,14 @@ void dd2hex(int argc, char const *argv[]){
 
 	printf("0x%x\n", ntohl(inaddr.s_addr));
 }
-struct student
-{
-	int age;
-	int height;
-	double score;
-};
+
+
 
 int main(int argc, char const *argv[])
 {
-	struct student* s;
-	printf("%d %d \n",sizeof(s),sizeof(*s));
-	s=Malloc(sizeof(*s));
-	s->age=10;
-	s->height=20;
-	s->score=25.32;
-	printf("score is %f %d %d \n",s->score,s->age,s->height);
-	if(s){
-		Free(s);
-		s=NULL;
-	}
+	
+	printf("%c",ngx_tolower('A'));
+
+	
 	return 0;
 }

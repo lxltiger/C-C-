@@ -1,6 +1,6 @@
 // <头文件>让C语言编辑器去系统目录(usr/include)下寻找相关头文件
 // include “a.h” “头文件”让C语言编辑器 去当前目录下寻找相关头文件
-
+https://github.com/google/glog.git
 /* 
 以操作系统视角看，键盘和屏幕都属于IO文件
 系统使用行缓冲输入，意味着按下回车输入的内容才会传给应用程序。ANSI C 把行缓冲输入作为标准
@@ -58,3 +58,71 @@ C语言中__attribute__可以设置函数属性（Function Attribute）、变量
   匿名映射：
   MAP_PRIVATE 创建进程私有字节都填充为0的内存，多用于malloc分配大内存
   MAP_SHARD  创建进程共享的内存，多用于进程间通讯
+
+/* 
+	struct student* s;
+	64位下sizeof(s)表示指针大小为8
+	sizeof(*s)为结构体大小，int为4字节，double为8字节，等于4+4+8=16
+ */
+struct student
+{
+	int age;
+	int height;
+	double score;
+};
+
+为了防止代码被重复包含，通常要加上“Include Guard”，也就是用“#ifndef/#define/#endif”来保护整个头文件
+```
+  
+  #ifndef _XXX_H_INCLUDED_
+  #define _XXX_H_INCLUDED_
+
+  ...    // 头文件内容
+
+  #endif // _XXX_H_INCLUDED_
+```
+
+
+
+如果一个数组含有大量数据，为了简洁，可以将其中的数据部分独立成一个文件*.inc,然后使用include去引用。注意：缺失细节待补充
+```
+  static uint32_t calc_table[] = {
+    # include "calc_values.inc" // 非常大的一个数组，细节被隐藏
+  };
+```
+
+宏是没有作用域概念的，永远是全局生效。所以，对于一些用来简化代码、起临时作用的宏，最好是用完后尽快用“#undef”取消定义，避免冲突的风险
+ ```
+  #ifdef AUTH_PWD                  // 检查是否已经有宏定义
+  #  undef AUTH_PWD                // 取消宏定义
+  #endif                           // 宏定义检查结束
+  #define AUTH_PWD "xxx"           // 重新宏定义
+ ```
+
+查看编译器提供的宏定义
+g++ -E -dM - < /dev/null
+输出如下
+#define __GNUC__ 5
+#define __unix__ 1
+#define __x86_64__ 1
+#define __UINT64_MAX__ 0xffffffffffffffffUL...
+
+在宏定义中使用
+```
+#if __GNUC__ <= 4    
+cout << "gcc is too old" << endl;
+#else    
+ cout << "gcc is good enough" << endl;
+#endif 
+```
+
+条件编译还有一个特殊的用法，那就是，使用“#if 1”“#if 0”来显式启用或者禁用大段代码，要比“/* … */”的注释方式安全得多，也清楚得多
+
+
+#if 0          // 0即禁用下面的代码，1则是启用
+  ...          // 任意的代码
+#endif         // 预处理结束
+
+#if 1          // 1启用代码，用来强调下面代码的必要性
+  ...          // 任意的代码
+#endif         // 预处理结束

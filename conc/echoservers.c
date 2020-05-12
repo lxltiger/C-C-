@@ -19,6 +19,16 @@ void check_clients(pool *p);
 
 int byte_cnt=0;/*server接受到的字节总数*/
 /*基于IO多路复用的并发echo服务器，单进程 高效 但无法利用多核优势*/
+
+/* 
+FD_ZERO 用来将这个向量的所有元素都设置成 0；
+FD_SET 用来把对应套接字 fd 的元素，a[fd]设置成 1；
+FD_CLR 用来把对应套接字 fd 的元素，a[fd]设置成 0；
+FD_ISSET 对这个向量进行检测，判断出对应套接字的元素 a[fd]是 0 还是 1。
+其中 0 代表不需要处理，1 代表需要处理。
+
+ */
+
 int main(int argc, char const *argv[])
 {
 	if (argc != 2) {
@@ -37,6 +47,10 @@ int main(int argc, char const *argv[])
     while(1){
     	//read set在运行过程中会不断变化，有添加进来的 有移出去的描述符
     	pool.ready_set=pool.read_set;
+		/* 最后一个参数是timeval，可能值如下：
+		第一个可能是设置成空 (NULL)，表示如果没有 I/O 事件发生，则 select 一直等待下去。
+		第二个可能是设置一个非零的值，这个表示等待固定的一段时间后从 select 阻塞调用中返回。
+		第三个可能是将 tv_sec 和 tv_usec 都设置成 0，表示根本不等待，检测完毕立即返回。这种情况使用得比较少。 */
     	pool.nready=Select(pool.maxfd+1,&pool.ready_set,NULL,NULL,NULL);
 		/*如果监听的描述符准备好了 将客户端加入pool*/
     	if(FD_ISSET(listenfd,&pool.ready_set)){

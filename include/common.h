@@ -28,8 +28,10 @@
 #include <stdbool.h> 
 
 #include "error_functions.h"
+
+
 /* Unfortunately some UNIX implementations define FALSE and TRUE -
-   here we'll undefine them */
+   here we'll undefine them， */
 
 #ifdef TRUE
 #undef TRUE
@@ -64,6 +66,11 @@ typedef struct {
 #define	MAXLINE	 8192  /* Max text line length */
 #define MAXBUF   8192  /* Max I/O buffer size */
 #define LISTENQ  1024  /* Second argument to listen() */
+
+//一些小函数使用宏来封装的效果比 inline 关键字要更好
+#define ngx_tolower(c) ((c >= 'A' && c <= 'Z') ? (c | 0x20) : c)
+#define ngx_toupper(c) ((c >= 'a' && c <= 'z') ? (c & ~0x20) : c)
+#define ngx_memzero(buf, n) (void) memset(buf, 0, n)
 
 /* Our own error-handling functions */
 void unix_error(char *msg);

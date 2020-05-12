@@ -76,7 +76,11 @@ void Close(int fd)
 		errExit("Close error");
 	// unix_error("Close error");
 }
-
+/* 
+可读的fd指的是读不会阻塞
+可行的fd也一样，写不会阻塞
+fd_set的上限是1024，所以最多监听的文件描述符数量是1024
+ */
 int Select(int  n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, 
 	   struct timeval *timeout){
 	 int rc;

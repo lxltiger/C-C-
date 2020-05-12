@@ -1,10 +1,15 @@
-#include <stdio.h>
-#include <strings.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <errno.h>
+// #include <stdio.h>
+// #include <strings.h>
+// #include <sys/socket.h>
+// #include <netinet/in.h>
+// #include <errno.h>
 
+#include "common.h"
 
+static int count;
+static void sig_int(int signo) { 
+	printf("\nreceived %d datagrams\n", count); exit(0);
+	}
 
 /* 从socketfd描述字中读取"size"个字节. */
 size_t  readn(int sockfd,void *buffer,size_t size){
@@ -82,3 +87,4 @@ int main(int argc, char const *argv[])
 	}
 	return 0;
 }
+
