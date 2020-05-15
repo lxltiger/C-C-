@@ -13,10 +13,8 @@ https://github.com/google/glog.git
 /**
 *C语言的编译过程 预编译－－编译－－链接
 *
-*预编译就是把include中的头文件替换过来并去掉注释
-*文件的路径最好不要含中文等特殊字符
-*gcc -E -o fileName sourceFileName 
-* -E  预编译 －o 输出的文件名
+*
+*
 *
 *编译 1.汇编 将预编译文件转化成汇编语言 2.编译 将汇编文件转化成机器语言
 *链接 将库函数和代码合并到一起成可执行文件
@@ -48,7 +46,9 @@ https://github.com/google/glog.git
 
 VS Code设置大写快捷键  File->Preference->Keyboards shortcut->Upper case   window下是ctrl+K
 
-C语言中__attribute__可以设置函数属性（Function Attribute）、变量属性（Variable Attribute）和类型属性（Type Attribute）
+编译指令可以让编译器更加高效，如 __attribute__，但这个不是标准，后来C++官方认识到其好处，将其升为标准，起名属性
+用来给变量、函数、类等“贴”上一个编译阶段的“标签”，方便编译器识别处理。属性”没有新增关键字，而是用两对方括号的形式“[[…]]
+可惜官方的属性基本没啥用，还好其支持非标准扩展，GCC 的属性都在“gnu::“，如[[gnu::deprecated]]
 
 内存映射的参数说明：
   以文件为基础的映射
@@ -71,16 +71,7 @@ struct student
 	double score;
 };
 
-为了防止代码被重复包含，通常要加上“Include Guard”，也就是用“#ifndef/#define/#endif”来保护整个头文件
-```
-  
-  #ifndef _XXX_H_INCLUDED_
-  #define _XXX_H_INCLUDED_
 
-  ...    // 头文件内容
-
-  #endif // _XXX_H_INCLUDED_
-```
 
 
 
@@ -91,33 +82,12 @@ struct student
   };
 ```
 
-宏是没有作用域概念的，永远是全局生效。所以，对于一些用来简化代码、起临时作用的宏，最好是用完后尽快用“#undef”取消定义，避免冲突的风险
- ```
-  #ifdef AUTH_PWD                  // 检查是否已经有宏定义
-  #  undef AUTH_PWD                // 取消宏定义
-  #endif                           // 宏定义检查结束
-  #define AUTH_PWD "xxx"           // 重新宏定义
- ```
 
-查看编译器提供的宏定义
-g++ -E -dM - < /dev/null
-输出如下
-#define __GNUC__ 5
-#define __unix__ 1
-#define __x86_64__ 1
-#define __UINT64_MAX__ 0xffffffffffffffffUL...
 
-在宏定义中使用
-```
-#if __GNUC__ <= 4    
-cout << "gcc is too old" << endl;
-#else    
- cout << "gcc is good enough" << endl;
-#endif 
-```
+
+
 
 条件编译还有一个特殊的用法，那就是，使用“#if 1”“#if 0”来显式启用或者禁用大段代码，要比“/* … */”的注释方式安全得多，也清楚得多
-
 
 #if 0          // 0即禁用下面的代码，1则是启用
   ...          // 任意的代码
@@ -126,3 +96,5 @@ cout << "gcc is too old" << endl;
 #if 1          // 1启用代码，用来强调下面代码的必要性
   ...          // 任意的代码
 #endif         // 预处理结束
+
+
