@@ -9,15 +9,16 @@ LDLIBS = -lpthread -lm
 COUNTERARGS = -O1 -Wall -I $(CSAPP_INC)
 
 # NOTE: we expect sharing.c to generate warnings
-PROGS =	hello\
-	echoclient\
-	echoservers\
-	echoserverp\
-	echoservert\
-	echoserverep\
-	sharing\
-	echoservert_pre\
-	ctime_ts\
+PROGS =	select\
+	# echoclient\
+	# echoservers\
+	# echoserverp\
+	# echoservert\
+	# echoserverep\
+	# sharing\
+	# echoservert_pre\
+	# ctime_ts\
+
 # 	echoservert_cnt\
 # 	race\
 # 	norace\
@@ -26,7 +27,6 @@ PROGS =	hello\
 # 	threadunsafe\
 # 	hellobug\
 # 	tfgets-main.o\
-# 	select\
 # 	psum-mutex\
 # 	psum-array\
 # 	psum-local\
@@ -36,8 +36,9 @@ PROGS =	hello\
 # 	rw3.o\
 
 all: $(CSAPP_SRC)/common.o $(PROGS)
-$(PROGS): $(CSAPP_SRC)/common.o 
+$(PROGS): $(CSAPP_SRC)/common.o $(CSAPP_SRC)/error_functions.o
 $(CSAPP_SRC)/common.o: $(CSAPP_SRC)/common.c $(CSAPP_INC)/common.h
+$(CSAPP_SRC)/error_functions.o: $(CSAPP_SRC)/error_functions.c $(CSAPP_INC)/error_functions.h
 
 # The two programs that we use to illustrate synchronization
 # goodcnt: goodcnt.c 
@@ -77,7 +78,7 @@ echoservert: echoservert.o echo.o
 # echoservert_cnt: echoservert_cnt.o echo_cnt.o
 echoservert_pre: echoservert_pre.o echo_count.o sbuf.o
 echoservers: echoservers.o echo.o
-# select: select.o echo.o
+select: select.o echo.o
 
 clean:
 	rm -f $(PROGS) *.o *~

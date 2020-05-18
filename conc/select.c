@@ -16,9 +16,9 @@ int main(int argc, char const *argv[])
     fd_set read_set,ready_set;
 
     listenfd=Open_listenfd(argv[1]);
-    FD_ZERO(&ready_set);/*clear read set*/
+    FD_ZERO(&read_set);/*clear read set*/
     FD_SET(STDIN_FILENO,&read_set);/*add stdin to read set*/
-    FD_SET(listenfd,&ready_set);/*add listenfd to read set*/
+    FD_SET(listenfd,&read_set);/*add listenfd to read set*/
 
     while(1){
     	ready_set=read_set;
@@ -35,6 +35,8 @@ int main(int argc, char const *argv[])
     }
 	return 0;
 }
+
+
 
 void command(void){
 	char buf[MAXLINE];

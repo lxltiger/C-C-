@@ -8,7 +8,7 @@ CXX=g++
 # CFLAGS = -Wall -O2 -I $(CSAPP_INC) -I .
 # LDLIBS = -lpthread
 
-PROGS =	proprocess
+PROGS =	oop
 	
 # $@表示目标文件  $^表示冒号后面的源文件
 $(PROGS):$(PROGS).cpp
