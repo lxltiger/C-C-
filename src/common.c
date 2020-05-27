@@ -112,6 +112,7 @@ int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *ev){
 	int rc;
 	if((rc=epoll_ctl(epfd,op,fd,ev))==-1)
 		unix_error("epoll_ctl error");
+	return rc;
 }
 
 /* Sockets interface wrappers */

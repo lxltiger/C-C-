@@ -10,11 +10,12 @@ COUNTERARGS = -O1 -Wall -I $(CSAPP_INC)
 
 # NOTE: we expect sharing.c to generate warnings
 PROGS =	select\
+	echoserverep\
 	# echoclient\
 	# echoservers\
 	# echoserverp\
 	# echoservert\
-	# echoserverep\
+	
 	# sharing\
 	# echoservert_pre\
 	# ctime_ts\

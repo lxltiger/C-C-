@@ -6,8 +6,8 @@ CSAPP_SRC = ../src
 CFLAGS = -Wall -O2 -I $(CSAPP_INC) -I .
 LDLIBS = -lpthread
 
-PROGS =	basic\
-	demo_inotify\
+PROGS =	poll_pipe\
+	# demo_inotify\
 	file_map\
 	# epoll\
 	

@@ -42,7 +42,7 @@ int main(int argc, char const *argv[])
 	server_addr.sin_family=AF_INET;
 	//由于主机采用的小端序列，网络采用的是大端，所以需要转换
 	// htons 表示host to net，主机到网络  s表示16位无符号整数，l表示32位
-	server_addr.sin_port=htons(12345);
+	server_addr.sin_port=htons(7777);
 	/*
 	将点分十进制IP地址转换为一个二进制的网络字节顺序的IP地址
 	如果十进制IP无效函数返回0，其它错误返回-1，并设置errno
